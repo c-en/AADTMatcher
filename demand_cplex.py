@@ -54,3 +54,5 @@ def time_trial():
             d.demand(prices)
     print(time.time()-start)
 
+if __name__ == '__main__':
+    time_trial()
