@@ -4,6 +4,11 @@ import time
 import numpy as np
 
 class DemandGUROBI:
+    # choreographers: list of name
+    # dancers: list of names
+    # utilities: list of lists of utilities, corr. w/ dancers
+    # capacities: list of capacities, corr. w/ dancers
+    # conflicts: list of tuples of conflicts
     def __init__(self, choreographers, dancers, utilities, capacities, conflicts):
         self.dancer_names = dancers
         self.dancer_models = []
@@ -16,6 +21,9 @@ class DemandGUROBI:
         for d in self.dancer_models:
             allocation = np.add(allocation, d.demand(prices))
         return allocation
+
+    def allocation(self, prices):
+        return np.array([d.demand(prices) for d in self.dancer_models])
 
 
 class DancerGUROBI:
