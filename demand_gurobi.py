@@ -3,6 +3,7 @@ import random
 import time
 import numpy as np
 
+
 class DemandGUROBI:
     def __init__(self, choreographers, dancers, utilities, capacities, conflicts):
         self.dancer_names = dancers
@@ -16,7 +17,6 @@ class DemandGUROBI:
         for d in self.dancer_models:
             allocation = np.add(allocation, d.demand(prices))
         return allocation
-
 
 class DancerGUROBI:
     def __init__(self, choreographers, utility, budget, capacity, conflicts):
