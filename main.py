@@ -4,25 +4,24 @@ import random
 import numpy as np
 
 # calculates clearing error of given choreo capacities and given demand
-def clearing_error(choreo_cap, demand):
-    return np.sum(np.square(np.subtract(choreo_cap, demand)))
+def clearing_error(choreo_min, choreo_max, demand):
+    under = np.clip(np.subtract(choreo_min, demand),0,math.inf)
+    over = np.clip(np.subtract(demand, choreo_max),0,math.inf)
+    diff = np.maximum(under, over)
+    return np.sum(np.square(diff))
+    
 
 # calculates neighboring price vectors of a given price vector p
+# return tuple: list of neighbor prices sorted by clearing error, list of corr. demand vecs, list of corr. error
 def N(p):
-    return [p]
+    return [], [], []
 
-def main(choreographers, dancers, utilities, dancer_cap, conflicts, choreo_cap):
-    # choreographers = []
-    # dancers = []
-    # utilities = []
-    # dancer_cap = []
-    # conflicts = []
-    # choreo_cap = np.array([])
+def main(choreographers, dancers, utilities, dancer_cap, conflicts, choreo_min, choreo_max):
     # initialize demand object
     D = DemandGUROBI(choreographers, dancers, utilities, dancer_cap, conflicts)
     # begin random restarts
     bestError = math.inf
-    bestPrices = None
+    bestPrice = None
     for _ in range(100):
         # start search from random, reasonable price vector
         p = [random.uniform(0,100) for c in choreographers]
@@ -34,36 +33,49 @@ def main(choreographers, dancers, utilities, dancer_cap, conflicts, choreo_cap):
         c = 0
         # restart search if error has not improved in 5 steps
         while c < 5:
-            neighbors = N(p)
-            visited = 0
-            for prices in neighbors:
-                d = D.demand(prices)
+            foundNextStep = False
+            # get neighboring price vecs, their demand vecs, and their errors
+            nbPrices, nbDemands, nbErrors = N(p)
+            # look thru neighbors for non-tabu price vec
+            for i in range(len(nbPrices)):
+                d = tuple(nbDemands[i])
                 if not d in tabu:
+                    foundNextStep = True
+                    # if non-tabu, add to tabu
+                    tabu.add(d)
+                    # update current location
+                    p = nbPrices[i]
+                    # update current error and (if needed) best error in current restart
+                    # if improved, reset c; if not, increment c
+                    currentError = nbErrors[i]
+                    if currentError < searchError:
+                        searchError = currentError
+                        c = 0
+                    else:
+                        c += 1
+                    # update current "high score" if needed, over all restarts
+                    if currentError < bestError:
+                        bestError = currentError
+                        bestPrice = p
                     break
-                visited += 1
-            if visited == len(neighbors):
-                c = 5
-            else:
-                p = prices
-                tabu.add(tuple(d))
-                currentError = clearing_error(choreo_cap, d)
-                if currentError < searchError:
-                    searchError = currentError
-                    c = 0
-                else:
-                    c += 1
-                if currentError < bestError:
-                    bestError = currentError
-                    bestPrices = p
-    return D.allocation(bestPrices)
+            if not foundNextStep:
+                break
+    return D.allocation(bestPrice)
 
 if __name__ == '__main__':
+    # choreographers: list of names
     choreographers = ['c'+str(i) for i in range(20)]
+    # dancers: list of names
     dancers = ['d'+str(i) for i in range(200)]
+    # utilities: dancers x choreographers matrix
     utilities = [[random.uniform(0,1) for _ in choreographers] for _ in dancers]
     caps = [1,2,3]
+    # list of dancer capacities
     dancer_cap = [random.choice(caps) for _ in dancers]
+    # list of tuples for conflicts
     conflicts = []
-    choreo_cap = [20] * len(20)
-    allocations = main(choreographers, dancers, utilities, dancer_cap, conflicts, choreo_cap)
+    # choreographer capacities - arrays for min and max capacities
+    choreo_min = np.array([15] * len(choreographers))
+    choreo_max = np.array([25] * len(choreographers))
+    allocations = main(choreographers, dancers, utilities, dancer_cap, conflicts, choreo_min, choreo_max)
     np.savetxt('allocation.csv', allocations, delimiter=',')
