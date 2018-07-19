@@ -1,0 +1,7 @@
+Choreographer,Show,Day,Start,End,MaxCap,MinCap
+A,H,Monday,1900,2100,10,20
+B,H,Monday,2030,2130,10,20
+C,H,Tuesday,900,1000,10,20
+E,E,Monday,1800,1930,10,20
+F,E,Tuesday,800,1100,10,20
+G,E,Tuesday,900,1000,10,20
