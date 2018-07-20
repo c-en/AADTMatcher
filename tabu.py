@@ -3,7 +3,9 @@ import math
 import random
 import csv
 import numpy as np
+import time
 
+maxTime = 28800
 
 # calculates clearing error of given choreo capacities and given demand
 def clearing_error(demand, choreo_min, choreo_max):
@@ -25,7 +27,8 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
     # begin random restarts
     bestError = float('inf')
     bestPrice = None
-    for _ in range(100):
+    startTime = time.time()
+    while time.time() - startTime < maxTime:
         # start search from random, reasonable price vector
         p = {c: random.uniform(0,100) for c in choreographers}
         # searchError tracks best error found in this search start
