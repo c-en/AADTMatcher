@@ -7,15 +7,17 @@ import numpy as np
 class DemandGUROBI:
     # choreographers: list of name
     # dancers: list of names
-    # utilities: list of lists of utilities, corr. w/ dancers
+    # utilities: list of dicts of utilities, corr. w/ dancers
     # capacities: list of capacities, corr. w/ dancers
     # conflicts: list of tuples of conflicts
-    def __init__(self, choreographers, dancers, utilities, capacities, conflicts):
+    def __init__(self, HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, EBcapacities, conflicts):
         self.dancer_names = dancers
         self.dancer_models = []
         budgets = np.linspace(start = 100, stop = 101, num = len(dancers))
+        np.random.shuffle(budgets)
         for i in range(len(dancers)):
-            self.dancer_models.append(DancerGUROBI(choreographers, utilities[i], budgets[i], capacities[i], conflicts))
+            self.dancer_models.append(DancerGUROBI(HZchoreographers, EBchoreographers, utilities[i], 
+                                        budgets[i], HZcapacities[i], EBcapacities[i], conflicts))
 
     def demand(self, prices):
         allocation = np.zeros_like(prices)
@@ -28,21 +30,20 @@ class DemandGUROBI:
 
 
 class DancerGUROBI:
-    def __init__(self, choreographers, utility, budget, capacity, conflicts):
-        util = {}
-        for i, c in enumerate(choreographers):
-            util[c] = utility[i]
+    def __init__(self, HZchoreographers, EBchoreographers, utility, budget, HZcapacity, EBcapacity, conflicts):
+        choreographers = HZchoreographers + EBchoreographers
         # initialize MIP
         self.prob = gb.Model("dancer")
         self.prob.setParam('OutputFlag', 0)
         # add variables
         self.vars = self.prob.addVars(choreographers, vtype = gb.GRB.BINARY, name='dance')
         # add objective
-        self.prob.setObjective(self.vars.prod(util), gb.GRB.MAXIMIZE)
+        self.prob.setObjective(self.vars.prod(utility), gb.GRB.MAXIMIZE)
         # budget constraint
         self.budgetConstraint = self.prob.addConstr(sum(0.0 * self.vars[a] for a in self.vars), sense=gb.GRB.LESS_EQUAL, rhs=float(budget), name='budget')
-        # capacity constraint
-        self.prob.addConstr(sum(1.0 * self.vars[x] for x in self.vars), sense=gb.GRB.LESS_EQUAL, rhs=float(capacity),name='capacity')
+        # capacity constraints
+        self.prob.addConstr(sum(1.0 * self.vars[x] for x in HZchoreographers), sense=gb.GRB.LESS_EQUAL, rhs=float(HZcapacity),name='HZcapacity')
+        self.prob.addConstr(sum(1.0 * self.vars[x] for x in EBchoreographers), sense=gb.GRB.LESS_EQUAL, rhs=float(EBcapacity),name='EBcapacity')
         # scheduling constraints
         for conflict in conflicts:
             self.prob.addConstr(sum(1.0 * self.vars[x] for x in conflict), sense=gb.GRB.LESS_EQUAL, rhs=1.0, name='conflicts')

@@ -4,18 +4,20 @@ import time
 import numpy as np
 
 def test():
-    choreographers = ['c'+str(i) for i in range(20)]
+    HZchoreographers = ['c'+str(i) for i in range(10)]
+    EBchoreographers = ['c'+str(i) for i in range(10,20)]
     dancers = ['d'+str(i) for i in range(200)]
-    utilities = [[random.uniform(0,1) for _ in choreographers] for _ in dancers]
-    capacities = [random.randint(1,5) for _ in dancers]
+    utilities = [{c: random.uniform(0,1) for c in HZchoreographers+EBchoreographers} for _ in dancers]
+    HZcapacities = [random.randint(1,3) for _ in dancers]
+    EBcapacities = [random.randint(1,3) for _ in dancers]
     conflicts = [('c1','c2'),('c1','c5'),('c10','c7')]
     start = time.time()
-    troupe = DemandGUROBI(choreographers, dancers, utilities, capacities, conflicts)
+    troupe = DemandGUROBI(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, EBcapacities, conflicts)
     print(time.time() - start)
     prices = {}
     start = time.time()
     for _ in range(1000):
-        for c in choreographers:
+        for c in HZchoreographers + EBchoreographers:
             prices[c] = random.uniform(0,1)
         a = troupe.demand(prices)
     print(time.time() - start)
