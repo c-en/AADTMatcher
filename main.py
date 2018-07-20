@@ -1,7 +1,7 @@
 from demand_gurobi import DemandGUROBI
-import math
 import random
 import numpy as np
+import pandas as pd
 
 # calculates clearing error of given choreo capacities and given demand
 def clearing_error(choreo_cap, demand):
@@ -21,24 +21,27 @@ def main(choreographers, dancers, utilities, dancer_cap, conflicts, choreo_cap):
     # initialize demand object
     D = DemandGUROBI(choreographers, dancers, utilities, dancer_cap, conflicts)
     # begin random restarts
-    bestError = math.inf
+    bestError = float('inf')
     bestPrices = None
-    for _ in range(100):
+    for _ in range(10):
         # start search from random, reasonable price vector
-        p = [random.uniform(0,100) for c in choreographers]
+        p = {}
+        for c in choreographers:
+            p[c] = random.uniform(0,100)
         # searchError tracks best error found in this search start
-        searchError = clearing_error(D.demand(p))
+        d = D.demand(p)
+        searchError = clearing_error(choreo_cap, curDemand)
         # set of tabu demand locations
         tabu = set([])
         # c tracks number of steps without improving error
         c = 0
         # restart search if error has not improved in 5 steps
         while c < 5:
-            neighbors = N(p)
+            neighbors = N(p, d)
             visited = 0
             for prices in neighbors:
                 d = D.demand(prices)
-                if not d in tabu:
+                if not tuple(d) in tabu:
                     break
                 visited += 1
             if visited == len(neighbors):
@@ -64,6 +67,7 @@ if __name__ == '__main__':
     caps = [1,2,3]
     dancer_cap = [random.choice(caps) for _ in dancers]
     conflicts = []
-    choreo_cap = [20] * len(20)
+    choreo_cap = [20] * len(choreographers)
     allocations = main(choreographers, dancers, utilities, dancer_cap, conflicts, choreo_cap)
-    np.savetxt('allocation.csv', allocations, delimiter=',')
+    df = pd.DataFrame(allocations, index=dancers, columns=choreographers)
+    df.to_csv('allocation.csv',index=True,header=True,sep=',')

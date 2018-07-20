@@ -47,6 +47,7 @@ class DancerGUROBI:
         for conflict in conflicts:
             self.prob.addConstr(sum(1.0 * self.vars[x] for x in conflict), sense=gb.GRB.LESS_EQUAL, rhs=1.0, name='conflicts')
 
+    # prices is a dict with key=choreographer, value=price
     def demand(self, prices):
         for i in prices:
             self.prob.chgCoeff(self.budgetConstraint, self.vars[i], prices[i])
