@@ -50,8 +50,8 @@ class DancerGUROBI:
 
     # prices is a dict with key=choreographer, value=price
     def demand(self, prices):
-        for i in prices:
-            self.prob.chgCoeff(self.budgetConstraint, self.vars[i], prices[i])
+        for i, p in enumerate(prices):
+            self.prob.chgCoeff(self.budgetConstraint, self.vars[i], p)
         self.prob.optimize()
         return np.array([v.x for v in self.prob.getVars()])
 
