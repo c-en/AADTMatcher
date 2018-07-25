@@ -19,24 +19,24 @@ class DemandGUROBI:
             self.dancer_models.append(DancerGUROBI(HZchoreographers, EBchoreographers, utilities[i], 
                                         budgets[i], HZcapacities[i], EBcapacities[i], conflicts))
 
-    def demand(self, prices):
+    def demand(self, prices, choreographers):
         allocation = np.zeros_like(prices)
         for d in self.dancer_models:
-            allocation = np.add(allocation, d.demand(prices))
+            allocation = np.add(allocation, d.demand(prices, choreographers))
         return allocation
 
-    def allocation(self, prices):
-        return np.array([d.demand(prices) for d in self.dancer_models])
+    def allocation(self, prices, choreographers):
+        return np.array([d.demand(prices, choreographers) for d in self.dancer_models])
 
 
 class DancerGUROBI:
     def __init__(self, HZchoreographers, EBchoreographers, utility, budget, HZcapacity, EBcapacity, conflicts):
-        choreographers = HZchoreographers + EBchoreographers
+        self.choreographers = HZchoreographers + EBchoreographers
         # initialize MIP
         self.prob = gb.Model("dancer")
         self.prob.setParam('OutputFlag', 0)
         # add variables
-        self.vars = self.prob.addVars(choreographers, vtype = gb.GRB.BINARY, name='dance')
+        self.vars = self.prob.addVars(self.choreographers, vtype = gb.GRB.BINARY, name='dance')
         # add objective
         self.prob.setObjective(self.vars.prod(utility), gb.GRB.MAXIMIZE)
         # budget constraint
@@ -48,10 +48,10 @@ class DancerGUROBI:
         for conflict in conflicts:
             self.prob.addConstr(sum(1.0 * self.vars[x] for x in conflict), sense=gb.GRB.LESS_EQUAL, rhs=1.0, name='conflicts')
 
-    # prices is a dict with key=choreographer, value=price
-    def demand(self, prices):
+    # prices is np array
+    def demand(self, prices, choreographers):
         for i, p in enumerate(prices):
-            self.prob.chgCoeff(self.budgetConstraint, self.vars[i], p)
+            self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], p)
         self.prob.optimize()
         return np.array([v.x for v in self.prob.getVars()])
 
