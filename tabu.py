@@ -4,6 +4,7 @@ import random
 import csv
 import numpy as np
 import time
+import postprocess
 
 maxTime = 22600# 28800
 GradientNeighbors = np.linspace(0.05, 0.5, num=10)
@@ -112,7 +113,8 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
     print "########################################"
     print "BEST ERROR: " + str(bestError)
     print "########################################"
-    return D.allocation(bestPrice, choreographers)
-
-
-        
+    allocation =D.allocation(bestPrice, choreographers)
+    finalPrice, finalAllocation = postprocess.final_allocation(D, p, allocation, choreographers, choreo_min, choreo_max)
+    print "BEST PRICE: "
+    print finalPrice
+    return finalAllocation
