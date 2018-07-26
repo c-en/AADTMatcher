@@ -13,7 +13,7 @@ class DemandGUROBI:
     def __init__(self, HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, EBcapacities, conflicts):
         self.dancer_names = dancers
         self.dancer_models = []
-        budgets = np.linspace(start = 100, stop = 101, num = len(dancers))
+        budgets = np.linspace(start = 100, stop = 107, num = len(dancers))
         np.random.shuffle(budgets)
         for i in range(len(dancers)):
             self.dancer_models.append(DancerGUROBI(HZchoreographers, EBchoreographers, utilities[i], 
