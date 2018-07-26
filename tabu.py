@@ -5,7 +5,11 @@ import csv
 import numpy as np
 import time
 
-maxTime = 22600# 28800
+# 8 hours, max iters per restart t = 100: best error 1367
+# 2 hours, t = 100: best error 1676
+# 1 hour, t=100: 4258
+
+maxTime = 1800#7200# 28800
 GradientNeighbors = np.linspace(0.05, 0.5, num=10)
 
 def vector_error(demand, choreo_min, choreo_max):
@@ -47,6 +51,8 @@ def N(p, curDemand, choreo_min, choreo_max, D, choreographers):
                 priceVec[i] *= 1.05
                 demand = D.demand(priceVec, choreographers)
                 while demand[i] >= curDemand[i]:
+                    if priceVec[i] == 0:
+                        priceVec[i] += 1
                     priceVec[i] *= 1.05
                     demand = D.demand(priceVec, choreographers)
                 error = clearing_error(demand, choreo_min, choreo_max)
@@ -79,7 +85,8 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
         t = 0
         # restart search if error has not improved in 5 steps, 
         restartTime = time.time()
-        while c < 5 and time.time() - restartTime < 300:
+        while c < 5 and t < 100:
+            t += 1
             foundNextStep = False
             # get neighboring price vecs, their demand vecs, and their errors
             nbPrices, nbDemands, nbErrors = N(p, curDemand, choreo_min, choreo_max, D, choreographers)
