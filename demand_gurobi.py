@@ -13,20 +13,28 @@ class DemandGUROBI:
     def __init__(self, HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, EBcapacities, conflicts):
         self.dancer_names = dancers
         self.dancer_models = []
+        self.choreographers = choreographers
         budgets = np.linspace(start = 100, stop = 101, num = len(dancers))
         np.random.shuffle(budgets)
         for i in range(len(dancers)):
             self.dancer_models.append(DancerGUROBI(HZchoreographers, EBchoreographers, utilities[i], 
                                         budgets[i], HZcapacities[i], EBcapacities[i], conflicts))
 
-    def demand(self, prices, choreographers):
+    def demand(self, prices):
         allocation = np.zeros_like(prices)
         for d in self.dancer_models:
-            allocation = np.add(allocation, d.demand(prices, choreographers))
+            allocation = np.add(allocation, d.demand(prices, self.choreographers))
         return allocation
 
-    def allocation(self, prices, choreographers):
-        return np.array([d.demand(prices, choreographers) for d in self.dancer_models])
+    def allocation(self, prices):
+        return np.array([d.demand(prices, self.choreographers) for d in self.dancer_models])
+
+    def full(self, ci, prices):
+        for d in self.dancer_models:
+            d.full(ci, prices, self.choreographers)
+
+    def dancers(self):
+        return self.dancer_models
 
 
 class DancerGUROBI:
@@ -40,6 +48,7 @@ class DancerGUROBI:
         # add objective
         self.prob.setObjective(self.vars.prod(utility), gb.GRB.MAXIMIZE)
         # budget constraint
+        self.budget = budget
         self.budgetConstraint = self.prob.addConstr(sum(0.0 * self.vars[a] for a in self.vars), sense=gb.GRB.LESS_EQUAL, rhs=float(budget), name='budget')
         # capacity constraints
         self.prob.addConstr(sum(1.0 * self.vars[x] for x in HZchoreographers), sense=gb.GRB.LESS_EQUAL, rhs=float(HZcapacity),name='HZcapacity')
@@ -54,6 +63,17 @@ class DancerGUROBI:
             self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], p)
         self.prob.optimize()
         return np.array([v.x for v in self.prob.getVars()])
+
+    def stage3demand(self, prices, choreographers):
+        self.budgetConstraint.Set(GRB.DoubleAttr.RHS, self.budget*1.1)
+        for i, p in enumerate(prices):
+            self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], p)
+        self.prob.optimize()
+        return np.array([v.x for v in self.prob.getVars()])
+
+    def full(self, ci, prices, choreographers):
+        if not self.demand(prices, choreographers)[i] == 1:
+            self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], 200.)
 
 
 def time_trial():
