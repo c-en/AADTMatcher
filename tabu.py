@@ -129,4 +129,3 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
     finalPrice, finalAllocation = postprocess.final_allocation(D, p, allocation, choreo_min, choreo_max, choreographers)
     print "FINAL PRICE: "
     print finalPrice
-    return finalAllocation
