@@ -6,7 +6,11 @@ import numpy as np
 import time
 import postprocess
 
-maxTime = 22600# 28800
+# 8 hours, max iters per restart t = 100: best error 1367
+# 2 hours, t = 100: best error 1676
+# 1 hour, t=100: 4258
+
+maxTime = 50
 GradientNeighbors = np.linspace(0.05, 0.5, num=10)
 
 def vector_error(demand, choreo_min, choreo_max):
@@ -22,16 +26,17 @@ def clearing_error(demand, choreo_min, choreo_max):
     
 # calculates neighboring price vectors of a given price vector p
 # return tuple: list of neighbor prices sorted by clearing error, list of corr. demand vecs, list of corr. error
-def N(p, curDemand, choreo_min, choreo_max, D, choreographers):
+def N(p, curDemand, choreo_min, choreo_max, D):
     neighbors = []
     # gradient neighbors
     demandError = vector_error(curDemand, choreo_min, choreo_max)
     div = max(np.absolute(demandError))
-    demandError /= div
+    if not div == 0:
+        demandError /= div
     steps = np.outer(GradientNeighbors, demandError)
     for step in steps:
         priceVec = np.multiply(step+1, p)
-        demand = D.demand(priceVec, choreographers)
+        demand = D.demand(priceVec)
         error = clearing_error(demand, choreo_min, choreo_max)
         neighbors.append((priceVec, demand, error))
     # individual adjustment neighbors
@@ -40,16 +45,18 @@ def N(p, curDemand, choreo_min, choreo_max, D, choreographers):
             if curDemand[i] < choreo_min[i]:
                 priceVec = np.copy(p)
                 priceVec[i] = 0
-                demand = D.demand(priceVec, choreographers)
+                demand = D.demand(priceVec)
                 error = clearing_error(demand, choreo_min, choreo_max)
                 neighbors.append((priceVec, demand, error))
             elif curDemand[i] > choreo_max[i]:
                 priceVec = np.copy(p)
                 priceVec[i] *= 1.05
-                demand = D.demand(priceVec, choreographers)
+                demand = D.demand(priceVec)
                 while demand[i] >= curDemand[i]:
+                    if priceVec[i] == 0:
+                        priceVec[i] = 1
                     priceVec[i] *= 1.05
-                    demand = D.demand(priceVec, choreographers)
+                    demand = D.demand(priceVec)
                 error = clearing_error(demand, choreo_min, choreo_max)
                 neighbors.append((priceVec, demand, error))
     # sort list of neighbors by best to worst clearing error
@@ -65,12 +72,12 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
     bestPrice = None
     startTime = time.time()
     restarts = 0
-    while time.time() - startTime < maxTime:
+    while time.time() - startTime < maxTime and bestError>0:
         print "RANDOM RESTART "+str(restarts)
         restarts += 1
         # start search from random, reasonable price vector
         p = np.random.uniform(low=0.0, high=100.0, size=len(choreographers))
-        curDemand = D.demand(p, choreographers)
+        curDemand = D.demand(p)
         # searchError tracks best error found in this search start
         searchError = clearing_error(curDemand, choreo_min, choreo_max)
         # set of tabu demand locations
@@ -80,10 +87,11 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
         t = 0
         # restart search if error has not improved in 5 steps, 
         restartTime = time.time()
-        while c < 5 and time.time() - restartTime < 300:
+        while c < 5:
+            t += 1
             foundNextStep = False
             # get neighboring price vecs, their demand vecs, and their errors
-            nbPrices, nbDemands, nbErrors = N(p, curDemand, choreo_min, choreo_max, D, choreographers)
+            nbPrices, nbDemands, nbErrors = N(p, curDemand, choreo_min, choreo_max, D)
             # look thru neighbors for non-tabu price vec
             for i in range(len(nbPrices)):
                 d = tuple(nbDemands[i])
@@ -93,7 +101,7 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
                     tabu.add(d)
                     # update current location
                     p = nbPrices[i]
-                    curDemand = D.demand(p, choreographers)
+                    curDemand = D.demand(p)
                     # update current error and (if needed) best error in current restart
                     # if improved, reset c; if not, increment c
                     currentError = nbErrors[i]
@@ -109,12 +117,17 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
                     break
             if not foundNextStep:
                 break
+        print "STEPS: "+str(t)
         print time.time() - startTime
     print "########################################"
     print "BEST ERROR: " + str(bestError)
     print "########################################"
-    allocation =D.allocation(bestPrice, choreographers)
-    finalPrice, finalAllocation = postprocess.final_allocation(D, p, allocation, choreographers, choreo_min, choreo_max)
-    print "BEST PRICE: "
+    print "STAGE 1 DEMAND"
+    print D.demand(bestPrice)
+    allocation = D.allocation(bestPrice)
+    print allocation
+    np.savetxt('preallocation.csv', allocation, delimiter=',')
+    finalPrice, finalAllocation = postprocess.final_allocation(D, p, allocation, choreo_min, choreo_max, choreographers)
+    print "FINAL PRICE: "
     print finalPrice
     return finalAllocation

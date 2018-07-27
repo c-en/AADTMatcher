@@ -13,8 +13,8 @@ class DemandGUROBI:
     def __init__(self, HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, EBcapacities, conflicts):
         self.dancer_names = dancers
         self.dancer_models = []
-        self.choreographers = choreographers
-        budgets = np.linspace(start = 100, stop = 101, num = len(dancers))
+        self.choreographers = HZchoreographers + EBchoreographers
+        budgets = np.linspace(start = 100, stop = 107, num = len(dancers))
         np.random.shuffle(budgets)
         for i in range(len(dancers)):
             self.dancer_models.append(DancerGUROBI(HZchoreographers, EBchoreographers, utilities[i], 
@@ -60,20 +60,21 @@ class DancerGUROBI:
     # prices is np array
     def demand(self, prices, choreographers):
         for i, p in enumerate(prices):
-            self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], p)
+            if not i in fullC:
+                self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], p)
         self.prob.optimize()
         return np.array([v.x for v in self.prob.getVars()])
 
-    def stage3demand(self, prices, choreographers):
-        self.budgetConstraint.Set(GRB.DoubleAttr.RHS, self.budget*1.1)
+    def stage3demand(self, prices, choreographers, fullC):
+        self.budgetConstraint.rhs = self.budget*1.1
         for i, p in enumerate(prices):
             self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], p)
         self.prob.optimize()
         return np.array([v.x for v in self.prob.getVars()])
 
     def full(self, ci, prices, choreographers):
-        if not self.demand(prices, choreographers)[i] == 1:
-            self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], 200.)
+        if not self.demand(prices, choreographers)[ci] == 1:
+            self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[ci]], 200.)
 
 
 def time_trial():
