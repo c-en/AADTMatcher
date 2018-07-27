@@ -10,7 +10,7 @@ import postprocess
 # 2 hours, t = 100: best error 1676
 # 1 hour, t=100: 4258
 
-maxTime = 100#50#28800
+maxTime = 50
 GradientNeighbors = np.linspace(0.05, 0.5, num=10)
 
 def vector_error(demand, choreo_min, choreo_max):
@@ -72,7 +72,7 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
     bestPrice = None
     startTime = time.time()
     restarts = 0
-    while time.time() - startTime < maxTime:
+    while time.time() - startTime < maxTime and bestError>0:
         print "RANDOM RESTART "+str(restarts)
         restarts += 1
         # start search from random, reasonable price vector
@@ -125,7 +125,9 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
     print "STAGE 1 DEMAND"
     print D.demand(bestPrice)
     allocation = D.allocation(bestPrice)
+    print allocation
     np.savetxt('preallocation.csv', allocation, delimiter=',')
     finalPrice, finalAllocation = postprocess.final_allocation(D, p, allocation, choreo_min, choreo_max, choreographers)
     print "FINAL PRICE: "
     print finalPrice
+    return finalAllocation

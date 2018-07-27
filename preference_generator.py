@@ -33,16 +33,22 @@ def gen_c():
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     start = ['1800', '1830', '1900', '1930', '2000', '2030', '2100', '2130', '2200', '2230', '2300']
     add = [100,200]
+    capacities = list(range(10,20))
     with open('schedule.csv', 'w+') as f:
         scwriter = csv.writer(f, delimiter = ',')
         scwriter.writerow(["Choreographer", "Show", "Day", "Start", "End", "MaxCap", "MinCap"])
         for c in HZchoreographers:
+            l = random.choice(capacities)
+            h = l + 10
             s = random.choice(start)
-            row = [c, "H", random.choice(days), s, str(int(s)+random.choice(add)), '15', '25']
+            row = [c, "H", random.choice(days), s, str(int(s)+random.choice(add)), str(l), str(h)]
             scwriter.writerow(row)
         for c in EBchoreographers:
+            l = random.choice(capacities)
+            h = l + 10
             s = random.choice(start)
-            row = [c, "E", random.choice(days), s, str(int(s)+random.choice(add)), '15', '25']
+            row = [c, "E", random.choice(days), s, str(int(s)+random.choice(add)), str(l), str(h)]
             scwriter.writerow(row)
 
 gen_d()
+gen_c()

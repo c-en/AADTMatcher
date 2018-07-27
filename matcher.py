@@ -120,6 +120,9 @@ def main():
     print "TOTAL DEMAND"
     print "HORIZON: " + str(sum(HZcapacities))
     print "EASTBOUND: "+ str(sum(EBcapacities))
+    print "TOTAL CAPACITY"
+    print choreo_min
+    print choreo_max
     allocations = tabu.tabu(HZchoreographers, EBchoreographers, dancers, utilities, 
                                 HZcapacities, EBcapacities, conflicts, choreo_min, choreo_max)
     # save final allocation matrix to file
