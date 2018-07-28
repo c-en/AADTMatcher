@@ -59,10 +59,13 @@ def main():
         EBcapacities = []
         utilities = []
         for dancer in prefs:
+            for key in dancer:
+                if key[-8:] == "'s dance":
+                    dancer[key[:-8]] = dancer.pop(key)
             dancers.append(dancer['Name'])
-            HZcapacities.append(int(dancer['How many Horizon dances?']))
-            EBcapacities.append(int(dancer['How many Eastbound dances?']))
-            dancerEmails[dancer['Name']] = dancer['Email address']
+            HZcapacities.append(int(dancer['How many Horizon dances do you want to join?']))
+            EBcapacities.append(int(dancer['How many Eastbound dances do you want to join?']))
+            dancerEmails[dancer['Name']] = dancer['Email Address']
             utilities.append({c: int(dancer[c]) for c in choreographers})
     print "TOTAL DEMAND"
     print "HORIZON: " + str(sum(HZcapacities))

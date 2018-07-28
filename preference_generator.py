@@ -17,7 +17,7 @@ def gen_d():
     EBdancer_cap = [random.choice(caps) for _ in dancers]
     with open('preferences.csv', 'w+') as f:
         prefwriter = csv.writer(f, delimiter=',')
-        header = ['Name', 'Email address','How many Horizon dances?'] + HZchoreographers + ['How many Eastbound dances?'] + EBchoreographers
+        header = ['Name', 'Email Address','How many Horizon dances do you want to join?'] + [c + "'s dance" for c in HZchoreographers] + ['How many Eastbound dances do you want to join?'] + [c + "'s dance" for c in EBchoreographers]
         prefwriter.writerow(header)
         for i, dancer in enumerate(dancers):
             row = [dancer, dancer+'@college.harvard.edu', HZdancer_cap[i]] + [HZutilities[i][c] for c in HZchoreographers] + [EBdancer_cap[i]] + [HZutilities[i][c] for c in HZchoreographers]
@@ -36,7 +36,7 @@ def gen_c():
     capacities = list(range(10,20))
     with open('schedule.csv', 'w+') as f:
         scwriter = csv.writer(f, delimiter = ',')
-        scwriter.writerow(["Choreographer", "Show", "Day", "Start", "End", "MaxCap", "MinCap"])
+        scwriter.writerow(["Choreographer", "Show", "Day", "Start", "End", "MinCap", "MaxCap"])
         for c in HZchoreographers:
             l = random.choice(capacities)
             h = l + 10
