@@ -1,11 +1,14 @@
 import numpy as np
 from demand_gurobi import DemandGUROBI
 
+# eliminates oversubscription in an allocation by iteratively raising prices
 def oversub(D, p, allocation, choreo_min, choreo_max):
     demand = np.sum(allocation, axis = 0)
     e = 5./300
+    # j is index of most oversubcribed dance
     j = np.argmax(demand - choreo_max)
     while np.any(demand - choreo_max>0):
+        # binary search on price of dance j, until oversubscription is <= ds
         ds = (demand - choreo_max)[j] / 2
         l = p[j]
         h = 110.
@@ -18,11 +21,13 @@ def oversub(D, p, allocation, choreo_min, choreo_max):
                 h = p[j]
         p[j] = h
         demand = D.demand(p)
+        # find next j
         j = np.argmax(demand - choreo_max)
     print "STAGE 2 DEMAND"
     print demand
     return p
 
+# eliminates undersubscription by giving students more budget, and allowing them to buy nonfull courses
 def undersub(D, p, allocation, choreo_min, choreo_max, choreographers):
     print 'UNDERSUB START'
     print p
@@ -46,6 +51,7 @@ def undersub(D, p, allocation, choreo_min, choreo_max, choreographers):
     print np.sum(allocation, axis=0)
     return p, allocation
 
+# modify a tabu-generated allocation to eliminate over- and under-subscription
 def final_allocation(D, p, allocation, choreo_min, choreo_max, choreographers):
     p = oversub(D, p, allocation, choreo_min, choreo_max)
     allocation = D.allocation(p)

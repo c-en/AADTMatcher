@@ -26,61 +26,6 @@ def test_random():
     allocations = tabu.tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZdancer_cap, EBdancer_cap, conflicts, choreo_min, choreo_max)
     np.savetxt('allocation_test.csv', allocations, delimiter=',')
 
-
-# def main():
-#     HZchoreographers = []
-#     HZchoreo_min = []
-#     HZchoreo_max = []
-#     EBchoreographers = []
-#     EBchoreo_min = []
-#     EBchoreo_max = []
-#     conflicts = cf.scheduleConflicts('schedule.csv')
-#     with open('schedule.csv', 'r') as f:
-#         schreader = csv.reader(f, delimiter=',')
-#         next(schreader)
-#         for row in schreader:
-#             if row[1] == "H":
-#                 HZchoreographers.append(row[0])
-#                 HZchoreo_min.append(int(row[5]))
-#                 HZchoreo_max.append(int(row[6]))
-#             else:
-#                 EBchoreographers.append(row[0])
-#                 EBchoreo_min.append(int(row[5]))
-#                 EBchoreo_max.append(int(row[6]))
-#     choreo_min = HZchoreo_min + EBchoreo_min
-#     choreo_max = HZchoreo_max + EBchoreo_max
-#     choreographers = HZchoreographers + EBchoreographers
-#     with open("preferences.csv", 'r') as f:
-#         # prefs = [{k: int(v) if v.isdigit() else v for k, v in row.items()} 
-#         #         for row in csv.DictReader(f, skipinitialspace=True)]
-#         prefs = csv.DictReader(f)
-#         dancers = []
-#         HZcapacities = []
-#         EBcapacities = []
-#         utilities = []
-#         for dancer in prefs:
-#             dancers.append(dancer['Name'])
-#             HZcapacities.append(dancer['How many Horizon dances?'])
-#             EBcapacities.append(dancer['How many Eastbound dances?'])
-#             utilities.append({c: int(dancer[c]) for c in choreographers})
-#     allocations = tabu.tabu(HZchoreographers, EBchoreographers, dancers, utilities, 
-#                                 HZcapacities, EBcapacities, conflicts, choreo_min, choreo_max)
-#     np.savetxt('allocations.csv', allocations, delimiter=',')
-#     assignments = {c:[] for c in choreographers}
-#     for d in range(len(allocations)):
-#         for c in range(len(allocations[d])):
-#             if allocations[d][c] == 1:
-#                 assignments[choreographers[c]].append(d)
-#     try:
-#         os.mkdir('assignments/')
-#     except:
-#         pass
-#     for c in assignments:
-#         with open('assignments/'+c+'.txt', 'w+') as f:
-#             f.write(c + '\n')
-#             for d in assignments[c]:
-#                 f.write(str(d) + '\n')
-
 def main():
     HZchoreographers = []
     HZchoreo_min = []
@@ -89,6 +34,7 @@ def main():
     EBchoreo_min = []
     EBchoreo_max = []
     conflicts = cf.scheduleConflicts('schedule.csv')
+    # read in dance schedule/information
     with open('schedule.csv', 'r') as f:
         schreader = csv.reader(f, delimiter=',')
         next(schreader)
@@ -104,6 +50,7 @@ def main():
     choreo_min = HZchoreo_min + EBchoreo_min
     choreo_max = HZchoreo_max + EBchoreo_max
     choreographers = HZchoreographers + EBchoreographers
+    # read in dancer preferences
     with open("preferences.csv", 'r') as f:
         prefs = csv.DictReader(f)
         dancers = []
@@ -123,6 +70,7 @@ def main():
     print "TOTAL CAPACITY"
     print choreo_min
     print choreo_max
+    # find optimal allocation of dancers to dances
     allocations = tabu.tabu(HZchoreographers, EBchoreographers, dancers, utilities, 
                                 HZcapacities, EBcapacities, conflicts, choreo_min, choreo_max)
     # save final allocation matrix to file

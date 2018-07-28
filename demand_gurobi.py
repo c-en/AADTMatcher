@@ -20,15 +20,18 @@ class DemandGUROBI:
             self.dancer_models.append(DancerGUROBI(HZchoreographers, EBchoreographers, utilities[i], 
                                         budgets[i], HZcapacities[i], EBcapacities[i], conflicts))
 
+    # given price vector, get total demand
     def demand(self, prices):
         allocation = np.zeros_like(prices)
         for d in self.dancer_models:
             allocation = np.add(allocation, d.demand(prices, self.choreographers))
         return allocation
 
+    # given price vector, get allocation
     def allocation(self, prices):
         return np.array([d.demand(prices, self.choreographers) for d in self.dancer_models])
 
+    # return list of dancer models
     def dancers(self):
         return self.dancer_models
 
@@ -60,6 +63,7 @@ class DancerGUROBI:
         self.prob.optimize()
         return np.array([v.x for v in self.prob.getVars()])
 
+    # get demand for stage 3, with higher budget but restricted access to dances that are full
     def stage3demand(self, prices, choreographers, fullC, alloc):
         self.budgetConstraint.rhs = self.budget*1.1
         for i, p in enumerate(prices):
