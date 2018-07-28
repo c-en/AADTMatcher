@@ -12,7 +12,7 @@ def oversub(D, p, allocation, choreo_min, choreo_max):
         while h-l > e:
             p[j] = (h+l)/2.
             demand = D.demand(p)
-            if demand[j] >= ds:
+            if demand[j] >= choreo_max[j] + ds:
                 l = p[j]
             else:
                 h = p[j]
@@ -32,16 +32,15 @@ def undersub(D, p, allocation, choreo_min, choreo_max, choreographers):
     while not done:
         done = True
         demand = np.sum(allocation, axis=0)
-        excess = demand - choreo_min
+        excess = demand - choreo_max
         for i, exd in enumerate(excess):
             if exd > 0:
-                D.full(i, p)
                 fullC.add(i)
-        for i, d in enumerate(D.dancers()):
-            newIndDem = d.stage3demand(p, choreographers)
-            if not np.array_equal(newIndDem, allocation[i]):
+        for j, d in enumerate(D.dancers()):
+            newIndDem = d.stage3demand(p, choreographers, fullC, allocation[j])
+            if not np.array_equal(newIndDem, allocation[j]):
                 done = False
-                allocation[i] = newIndDem
+                allocation[j] = newIndDem
                 break
     print "STAGE 3 DEMAND"
     print np.sum(allocation, axis=0)

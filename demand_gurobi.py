@@ -29,10 +29,6 @@ class DemandGUROBI:
     def allocation(self, prices):
         return np.array([d.demand(prices, self.choreographers) for d in self.dancer_models])
 
-    def full(self, ci, prices):
-        for d in self.dancer_models:
-            d.full(ci, prices, self.choreographers)
-
     def dancers(self):
         return self.dancer_models
 
@@ -60,21 +56,19 @@ class DancerGUROBI:
     # prices is np array
     def demand(self, prices, choreographers):
         for i, p in enumerate(prices):
-            if not i in fullC:
                 self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], p)
         self.prob.optimize()
         return np.array([v.x for v in self.prob.getVars()])
 
-    def stage3demand(self, prices, choreographers, fullC):
+    def stage3demand(self, prices, choreographers, fullC, alloc):
         self.budgetConstraint.rhs = self.budget*1.1
         for i, p in enumerate(prices):
-            self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], p)
+            if not i in fullC or alloc[i]==1:
+                self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], p)
+            else:
+                self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[i]], 200.)
         self.prob.optimize()
         return np.array([v.x for v in self.prob.getVars()])
-
-    def full(self, ci, prices, choreographers):
-        if not self.demand(prices, choreographers)[ci] == 1:
-            self.prob.chgCoeff(self.budgetConstraint, self.vars[choreographers[ci]], 200.)
 
 
 def time_trial():
