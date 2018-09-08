@@ -7,7 +7,7 @@ AADTMatcher runs on Python2, although it may be compatible with Python3 (I haven
 ___
 
 ## Operating Instructions
-1. Create the Dance Preferences Google Form for the troupe to fill out. Use [this template](google.com) *exactly*; changing the format of questions or question titles will likely break the Matcher. Export and save the results spreadsheet as `preferences.csv`.
+1. Create the Dance Preferences Google Form for the troupe to fill out. Use [this template](https://drive.google.com/open?id=1q_T8xYxndKK6aVQJ4TMPpFCGnrqIDiPpJclJOwYnMPo) *exactly*; changing the format of questions or question titles will likely break the Matcher. Export and save the results spreadsheet as `preferences.csv`.
 
 2. Update the file `schedule.csv` with the semester's rehearsal information. Each row is for one dance, with columns as follows:
   * Choreographer: the name of the choreographer
