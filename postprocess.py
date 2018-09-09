@@ -29,9 +29,8 @@ def oversub(D, p, allocation, choreo_min, choreo_max):
 
 # eliminates undersubscription by giving students more budget, and allowing them to buy nonfull courses
 def undersub(D, p, allocation, choreo_min, choreo_max, choreographers):
-    print 'UNDERSUB START'
+    print 'STAGE 2 PRICE'
     print p
-    print allocation
     fullC = set([])
     done = False
     while not done:

@@ -125,7 +125,6 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
     print "STAGE 1 DEMAND"
     print D.demand(bestPrice)
     allocation = D.allocation(bestPrice)
-    print allocation
     # save initial allocation 
     np.savetxt('preallocation.csv', allocation, delimiter=',')
     finalPrice, finalAllocation = postprocess.final_allocation(D, p, allocation, choreo_min, choreo_max, choreographers)

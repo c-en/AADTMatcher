@@ -4,11 +4,11 @@ def scheduleConflicts(schFile):
     conflicts = []
     dances = {'Sunday': [], 'Monday': [], 'Tuesday': [], 'Wednesday': [], 'Thursday': [], 'Friday': [], 'Saturday': []}
     with open(schFile, 'r') as f:
-        schreader = csv.reader(f, delimiter=',')
+        schreader = csv.DictReader(f, delimiter=',')
         next(schreader)
         for row in schreader:
-            day = row[2]
-            dance = {'c':row[0], 'show': row[1], 'start': int(row[3]), 'end': int(row[4])}
+            day = row['Day']
+            dance = {'c':row['Choreographer'], 'show': row['Show'], 'start': int(row['Start']), 'end': int(row['End'])}
             for otherDance in dances[day]:
                 lastStart = max(dance['start'], otherDance['start'])
                 firstEnd = min(dance['end'], otherDance['end'])

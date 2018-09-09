@@ -33,20 +33,22 @@ def main():
     EBchoreographers = []
     EBchoreo_min = []
     EBchoreo_max = []
+    c_for_title = {}
     conflicts = cf.scheduleConflicts('schedule.csv')
     # read in dance schedule/information
     with open('schedule.csv', 'r') as f:
-        schreader = csv.reader(f, delimiter=',')
+        schreader = csv.DictReader(f, delimiter=',')
         next(schreader)
         for row in schreader:
-            if row[1] == "H":
-                HZchoreographers.append(row[0])
-                HZchoreo_min.append(int(row[5]))
-                HZchoreo_max.append(int(row[6]))
+            if row['Show'] == "H":
+                HZchoreographers.append(row['Choreographer'])
+                HZchoreo_min.append(int(row['MinCap']))
+                HZchoreo_max.append(int(row['MaxCap']))
             else:
-                EBchoreographers.append(row[0])
-                EBchoreo_min.append(int(row[5]))
-                EBchoreo_max.append(int(row[6]))
+                EBchoreographers.append(row['Choreographer'])
+                EBchoreo_min.append(int(row['MinCap']))
+                EBchoreo_max.append(int(row['MaxCap']))
+            c_for_title[row['Title']] = row['Choreographer']
     choreo_min = HZchoreo_min + EBchoreo_min
     choreo_max = HZchoreo_max + EBchoreo_max
     choreographers = HZchoreographers + EBchoreographers
@@ -60,8 +62,8 @@ def main():
         utilities = []
         for dancer in prefs:
             for key in dancer:
-                if key[-8:] == "'s dance":
-                    dancer[key[:-8]] = dancer.pop(key)
+                if key in c_for_title:
+                    dancer[c_for_title[key]] = dancer.pop(key)
             dancers.append(dancer['Name'])
             HZcapacities.append(int(dancer['How many Horizon dances do you want to join?']))
             EBcapacities.append(int(dancer['How many Eastbound dances do you want to join?']))
@@ -95,4 +97,4 @@ def main():
                 f.write(d + ',' + dancerEmails[d]+ '\n')
 
 if __name__ == "__main__":
-    main()
+   main()
