@@ -66,7 +66,7 @@ def main():
                     dancer[c_for_title[key]] = dancer.pop(key)
             dancers.append(dancer['Name'])
             HZcapacities.append(int(dancer['How many Horizon dances do you want to join?']))
-            EBcapacities.append(int(dancer['How many Eastbound dances do you want to join?']))
+            EBcapacities.append(int(dancer['How many Eastbound dances do you want to join, excluding Flagship?']))
             dancerEmails[dancer['Name']] = dancer['Email Address']
             utilities.append({c: int(dancer[c]) for c in choreographers})
     print "TOTAL DEMAND"
@@ -86,15 +86,20 @@ def main():
     except:
         pass
     rosters = {c:[] for c in choreographers}
+    assignments = {d:[] for d in dancers}
     for d in range(len(allocations)):
         for c in range(len(allocations[d])):
             if allocations[d][c]==1:
                 rosters[choreographers[c]].append(dancers[d])
+                assignments[d].append(c)
     for c in rosters:
         with open('rosters/'+c+'.csv', 'w+') as f:
             f.write(c+'\n')
             for d in rosters[c]:
                 f.write(d + ',' + dancerEmails[d]+ '\n')
+    with open("assignments.csv", 'w+') as f:
+        for d in dancers:
+            f.write(d + ',' + ','.join(dancers[d]))
 
 if __name__ == "__main__":
    main()

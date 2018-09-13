@@ -10,7 +10,7 @@ import postprocess
 # 2 hours, t = 100: best error 1676
 # 1 hour, t=100: 4258
 
-maxTime = 50
+maxTime = 21600
 GradientNeighbors = np.linspace(0.05, 0.5, num=10)
 
 def vector_error(demand, choreo_min, choreo_max):
@@ -118,7 +118,9 @@ def tabu(HZchoreographers, EBchoreographers, dancers, utilities, HZcapacities, E
             if not foundNextStep:
                 break
         print "STEPS: "+str(t)
+        print "ERROR: "+str(currentError)
         print time.time() - startTime
+        print "----------------------------"
     print "########################################"
     print "BEST ERROR: " + str(bestError)
     print "########################################"
