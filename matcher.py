@@ -38,7 +38,6 @@ def main():
     # read in dance schedule/information
     with open('schedule.csv', 'r') as f:
         schreader = csv.DictReader(f, delimiter=',')
-        next(schreader)
         for row in schreader:
             if row['Show'] == "H":
                 HZchoreographers.append(row['Choreographer'])
