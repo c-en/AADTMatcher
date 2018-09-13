@@ -91,7 +91,7 @@ def main():
         for c in range(len(allocations[d])):
             if allocations[d][c]==1:
                 rosters[choreographers[c]].append(dancers[d])
-                assignments[d].append(c)
+                assignments[dancers[d]].append(c)
     for c in rosters:
         with open('rosters/'+c+'.csv', 'w+') as f:
             f.write(c+'\n')
