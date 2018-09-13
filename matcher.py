@@ -99,7 +99,7 @@ def main():
                 f.write(d + ',' + dancerEmails[d]+ '\n')
     with open("assignments.csv", 'w+') as f:
         for d in dancers:
-            f.write(d + ',' + ','.join(assignments[d]))
+            f.write(d + ',' + ','.join(assignments[d]) + "\n")
 
 if __name__ == "__main__":
    main()
