@@ -11,7 +11,7 @@ import postprocess
 # 1 hour, t=100: 4258
 
 
-maxTime = 300
+maxTime = 1200
 GradientNeighbors = np.linspace(0.05, 0.5, num=10)
 
 def vector_error(demand, choreo_min, choreo_max):
