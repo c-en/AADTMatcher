@@ -125,12 +125,6 @@ def tabu(agents, objects, avail, Market):
                     break
             if not foundNextStep:
                 break
-        # print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        # for x in pricelist:
-        #     print x
-        # print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-        # for x in demandlist:
-        #     print x
         print "STEPS: "+str(t)
         print "ERROR: "+str(currentError)
         times.append(time.time() - startTime)

@@ -6,6 +6,8 @@ import marketLinear
 import aceei
 import os
 
+ranks = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth']
+
 def test_random():
     # choreographers: list of names
     choreographers = ['c'+str(i) for i in range(20)]
@@ -52,7 +54,7 @@ def main():
         # complements[c_idx[conflict[1]]][c_idx[conflict[0]]] = -1000.
     # read in dancer preferences, assign utility values arbitrarity
     # NOTE: this only supports ranking up to 6 dances; utility values are set as 10-(rank of dance)
-    ranks = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth']
+    # - you may update the number of supported ranks at the top of this file, variable "ranks"
     with open("preferences.csv", 'r') as f:
         prefs = csv.DictReader(f)
         dancers = []
