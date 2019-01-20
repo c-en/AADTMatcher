@@ -1,0 +1,11 @@
+/gurobi.log
+/*.pyc
+/preferences.csv
+/allocations.csv
+/assignments.csv
+
+/rosters/
+/testrosters/
+/final_rosters/
+/__pycache__/
+/old/

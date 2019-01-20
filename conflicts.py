@@ -8,7 +8,7 @@ def scheduleConflicts(schFile):
         next(schreader)
         for row in schreader:
             day = row['Day']
-            dance = {'c':row['Choreographer'], 'show': row['Show'], 'start': int(row['Start']), 'end': int(row['End'])}
+            dance = {'c':row['Choreographer'], 'start': int(row['Start']), 'end': int(row['End'])}
             for otherDance in dances[day]:
                 lastStart = max(dance['start'], otherDance['start'])
                 firstEnd = min(dance['end'], otherDance['end'])
