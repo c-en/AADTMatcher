@@ -1,14 +1,14 @@
 Choreographer,Day,Start,End,MinCap,MaxCap
-Company,Sunday,1400,1600,15,25
-Melissa,Sunday,1000,1200,15,25
-Anya,Sunday,2000,2200,15,25
-Shira and Tiff,Monday,1730,1900,15,25
-Evelyn and Grace,Monday,1900,2100,15,25
-Michelle and Evelyn,Tuesday,1730,1900,15,25
-Carissa,Tuesday,1800,2000,15,25
-Christina,Wednesday,1700,1900,15,25
-Jasmine,Wednesday,1900,2100,15,25
-Kelsang and Jen,Friday,1500,1700,15,25
-Sophia,Saturday,1030,1200,15,25
-Lily and Sierra,Saturday,1400,1600,15,25
-Larry,Friday,1900,2100,15,25
+Company,Sunday,1400,1600,5,100
+Melissa,Sunday,1000,1200,5,30
+Anya,Sunday,2000,2200,5,30
+Shira and Tiff,Monday,1730,1900,4,20
+Evelyn and Grace,Monday,1900,2100,5,30
+Michelle and Evelyn,Tuesday,1730,1900,5,30
+Carissa,Tuesday,1800,2000,4,30
+Christina,Wednesday,1700,1900,4,20
+Jasmine,Wednesday,1900,2100,4,20
+Kelsang and Jen,Friday,1500,1700,5,30
+Sophia,Saturday,1030,1200,4,30
+Lily and Sierra,Saturday,1400,1600,4,20
+Larry,Friday,1900,2100,5,30
