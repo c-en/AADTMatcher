@@ -83,7 +83,7 @@ def main():
         for row in f:
             a = row.replace("\r\n", "")
             deprio.add(a)
-    lottery = np.random.uniform(len(dancers))
+    lottery = np.random.uniform(0,1,len(dancers))
     for i, dancer in enumerate(dancers):
         if dancerEmails[dancer] in deprio:
             lottery[i] -= 1
