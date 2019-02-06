@@ -1,21 +1,14 @@
 Choreographer,Day,Start,End,MinCap,MaxCap
-c0,Friday,2200,2400,15,25
-c1,Sunday,1800,2000,11,21
-c2,Sunday,1830,2030,13,23
-c3,Saturday,2130,2330,10,20
-c4,Tuesday,2130,2330,15,25
-c5,Wednesday,2100,2300,14,24
-c6,Sunday,2000,2200,10,20
-c7,Friday,1800,2000,15,25
-c8,Monday,1830,2030,10,20
-c9,Thursday,2030,2230,15,25
-c10,Tuesday,1830,2030,10,20
-c11,Thursday,2100,2300,15,25
-c12,Sunday,2130,2330,19,29
-c13,Saturday,1930,2130,12,22
-c14,Tuesday,2300,2500,16,26
-c15,Saturday,2300,2500,17,27
-c16,Tuesday,2130,2330,15,25
-c17,Thursday,2000,2200,18,28
-c18,Monday,2130,2330,18,28
-c19,Sunday,1900,2100,16,26
+Company,Sunday,1400,1600,15,25
+Melissa,Sunday,1000,1200,15,25
+Anya,Sunday,2000,2200,15,25
+Shira and Tiff,Monday,1730,1900,15,25
+Evelyn and Grace,Monday,1900,2100,15,25
+Michelle and Evelyn,Tuesday,1730,1900,15,25
+Carissa,Tuesday,1800,2000,15,25
+Christina,Wednesday,1700,1900,15,25
+Jasmine,Wednesday,1900,2100,15,25
+Kelsang and Jen,Friday,1500,1700,15,25
+Sophia,Saturday,1030,1200,15,25
+Lily and Sierra,Saturday,1400,1600,15,25
+Larry,Friday,1900,2100,15,25

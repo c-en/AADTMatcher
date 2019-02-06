@@ -67,7 +67,7 @@ def main():
             dancerEmails[dancer['Name']] = dancer['Email Address']
             dancer_utility = [0.] * len(choreographers)
             for i, rank in enumerate(ranks):
-                c = dancer['Please select your '+ rank +' choice dance.']
+                c = dancer['Please select your '+ rank +' choice dance.'].split(' (')[0]
                 if not c == 'N/A':
                     dancer_utility[c_idx[c]] = 9.-i
             utilities.append(dancer_utility)
@@ -77,6 +77,19 @@ def main():
     print sum(choreo_min)
     print choreo_max
     print sum(choreo_max)
+    # randomize dancer priority, and deprioritize marked dancers
+    with open("depriority.csv", 'r') as f:
+        deprio = set()
+        for row in f:
+            a = row.replace("\r\n", "")
+            deprio.add(a)
+    lottery = np.random.uniform(len(dancers))
+    for i, dancer in enumerate(dancers):
+        if dancerEmails[dancer] in deprio:
+            lottery[i] -= 1
+    info = zip(lottery, dancers, capacities, utilities)
+    info.sort()
+    _, dancers, capacities, utilities = zip(*info)
     # run A-CEEI to find optimal allocations of dancers to dances
     Market = marketLinear.MarketLinear(dancers, choreographers, capacities, utilities, [complements]*len(dancers))
     allocation, times, besterrors = aceei.tabu(dancers, choreographers, (choreo_min, choreo_max), Market)

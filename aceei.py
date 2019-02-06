@@ -4,7 +4,7 @@ import csv
 import numpy as np
 import time
 
-# maximum runtime for tabu
+# maximum runtime for tabu, in seconds
 maxTime = 2*60
 
 # parameter for the range of gradient neighbors to calculate
@@ -23,7 +23,6 @@ def clearing_error(demand, avail):
 # calculates neighboring price vectors of a given price vector p
 # return tuple: list of neighbor prices sorted by clearing error, list of corr. demand vecs, list of corr. error
 def N(p, curDemand, avail, Market):
-    print curDemand
     neighbors = []
     # gradient neighbors
     demandError = vector_error(curDemand, avail)
