@@ -77,7 +77,12 @@ def main():
     print sum(choreo_min)
     print choreo_max
     print sum(choreo_max)
-    # randomize dancer priority, and deprioritize marked dancers
+    # randomize dancer priority, and de/prioritize marked dancers
+    with open("priority.csv", 'r') as f:
+        prio = set()
+        for row in f:
+            a = row.replace("\r\n", "")
+            deprio.add(a)
     with open("depriority.csv", 'r') as f:
         deprio = set()
         for row in f:
@@ -87,6 +92,8 @@ def main():
     for i, dancer in enumerate(dancers):
         if dancerEmails[dancer] in deprio:
             lottery[i] -= 1
+        elif dancerEmails[dancer] in prio:
+            lottery[i] += 1
     info = zip(lottery, dancers, capacities, utilities)
     info.sort()
     _, dancers, capacities, utilities = zip(*info)
