@@ -5,7 +5,7 @@ import numpy as np
 import time
 
 # maximum runtime for tabu, in seconds
-maxTime = 2*60
+maxTime = 2*60*60
 
 # parameter for the range of gradient neighbors to calculate
 GradientNeighbors = np.linspace(0.05, 0.5, num=10)
@@ -32,7 +32,7 @@ def N(p, curDemand, avail, Market):
     steps = np.outer(GradientNeighbors, demandError)
     for step in steps:
         priceVec = np.multiply(step+1, p)
-        demand = Market.demand(priceVec)
+        demand, utility = Market.demand(priceVec)
         error = clearing_error(demand, avail)
         neighbors.append((priceVec, demand, error))
     # individual adjustment neighbors
@@ -41,18 +41,18 @@ def N(p, curDemand, avail, Market):
             if curDemand[i] < avail[0][i]:
                 priceVec = np.copy(p)
                 priceVec[i] = 0
-                demand = Market.demand(priceVec)
+                demand, utility = Market.demand(priceVec)
                 error = clearing_error(demand, avail)
                 neighbors.append((priceVec, demand, error))
             elif curDemand[i] > avail[1][i]:
                 priceVec = np.copy(p)
                 priceVec[i] *= 1.05
-                demand = Market.demand(priceVec)
+                demand, utility = Market.demand(priceVec)
                 while demand[i] >= curDemand[i]:
                     if priceVec[i] == 0:
                         priceVec[i] = 1
                     priceVec[i] *= 1.05
-                    demand = Market.demand(priceVec)
+                    demand, utility = Market.demand(priceVec)
                 error = clearing_error(demand, avail)
                 neighbors.append((priceVec, demand, error))
     # sort list of neighbors by best to worst clearing error
@@ -82,7 +82,7 @@ def tabu(agents, objects, avail, Market):
         restarts += 1
         # start search from random, reasonable price vector
         p = np.random.uniform(low=0.0, high=107.0, size=len(objects))
-        curDemand = Market.demand(p)
+        curDemand, utility = Market.demand(p)
         # searchError tracks best error found in this search start
         searchError = clearing_error(curDemand, avail)
         # set of tabu demand locations
@@ -107,7 +107,7 @@ def tabu(agents, objects, avail, Market):
                     # update current location
                     p = nbPrices[i]
                     pricelist.append(p)
-                    curDemand = Market.demand(p)
+                    curDemand, utility = Market.demand(p)
                     demandlist.append(curDemand)
                     # update current error and (if needed) best error in current restart
                     # if improved, reset c; if not, increment c
@@ -134,7 +134,10 @@ def tabu(agents, objects, avail, Market):
     print "BEST ERROR: " + str(bestError)
     print "########################################"
     print "STAGE 1 DEMAND"
-    print Market.demand(bestPrice)
+    demand, utility = Market.demand(bestPrice)
+    print demand
+    print "STAGE 1 UTILITY"
+    print utility
     allocation = Market.allocation(bestPrice)
     # save initial allocation 
     np.savetxt('preallocation.csv', allocation, delimiter=',')
