@@ -82,7 +82,7 @@ def main():
         prio = set()
         for row in f:
             a = row.replace("\r\n", "")
-            deprio.add(a)
+            prio.add(a)
     with open("depriority.csv", 'r') as f:
         deprio = set()
         for row in f:

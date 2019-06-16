@@ -37,13 +37,13 @@ class AgentLinear:
         # add objective
         self.prob.setObjective(self.object_vars.prod({objects[i]:v for i,v in enumerate(value)}) + self.complement_vars.prod(complement_coeffs), gb.GRB.MAXIMIZE)
 
-    # get this agent's demand when faced with a given price vector
+    # get this agent's (demand, objective value) when faced with a given price vector
     def demand(self, prices):
         # set MIP bugdet constraint to reflect to given prices
         for i, p in enumerate(prices):
             self.prob.chgCoeff(self.budgetConstraint, self.object_vars[self.objects[i]], p)
         self.prob.optimize()
-        return np.array([self.object_vars[v].x for v in self.object_vars])
+        return (np.array([self.object_vars[v].x for v in self.object_vars]), self.prob.objVal)
 
 # generates a set of agent demand MIPs for a given market
 class MarketLinear:
@@ -61,16 +61,19 @@ class MarketLinear:
         for i in range(len(agents)):
             self.agent_models.append(AgentLinear(objects, capacities[i], budgets[i], values[i], complements[i]))
 
-    # given price vector, get total demand
+    # given price vector, get total demand and total utility
     def demand(self, prices):
         total_demand = np.zeros_like(prices)
+        total_utility = 0
         for a in self.agent_models:
-            total_demand = np.add(total_demand, a.demand(prices))
-        return total_demand
+            dem, util = a.demand(prices)
+            total_demand = np.add(total_demand, dem)
+            total_utility += util
+        return total_demand, total_utility
 
     # given price vector, get allocation
     def allocation(self, prices):
-        return np.array([a.demand(prices) for a in self.agent_models])
+        return np.array([a.demand(prices)[0] for a in self.agent_models])
 
     # return list of agent models
     def agents(self):
