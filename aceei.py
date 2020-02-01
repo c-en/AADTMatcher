@@ -5,7 +5,7 @@ import numpy as np
 import time
 
 # maximum runtime for tabu, in seconds
-maxTime = 2*60*60
+maxTime = 60*10
 
 # parameter for the range of gradient neighbors to calculate
 GradientNeighbors = np.linspace(0.05, 0.5, num=10)
@@ -138,8 +138,16 @@ def tabu(agents, objects, avail, Market):
     print demand
     print "STAGE 1 UTILITY"
     print utility
+    print "STAGE 1 PRICE: " + str(bestPrice)
     allocation = Market.allocation(bestPrice)
     # save initial allocation 
     np.savetxt('preallocation.csv', allocation, delimiter=',')
-    print "FINAL PRICE: " + str(bestPrice)
-    return allocation, times, besterrors
+    # aftermarket allocations with increased budget
+    demand2, allocation2 = Market.aftermarket(bestPrice, avail)
+    finalerror = clearing_error(demand2, avail)
+    print "****************************************"
+    print "FINAL ERROR: " + str(finalerror)
+    print "FINAL DEMAND"
+    print demand2
+    print "****************************************"
+    return allocation, allocation2, times, besterrors

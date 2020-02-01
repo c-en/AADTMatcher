@@ -38,10 +38,10 @@ class AgentLinear:
         self.prob.setObjective(self.object_vars.prod({objects[i]:v for i,v in enumerate(value)}) + self.complement_vars.prod(complement_coeffs), gb.GRB.MAXIMIZE)
 
     # get this agent's (demand, objective value) when faced with a given price vector
-    def demand(self, prices):
+    def demand(self, prices, budgetmult = 1.):
         # set MIP bugdet constraint to reflect to given prices
         for i, p in enumerate(prices):
-            self.prob.chgCoeff(self.budgetConstraint, self.object_vars[self.objects[i]], p)
+            self.prob.chgCoeff(self.budgetConstraint, self.object_vars[self.objects[i]], p/budgetmult)
         self.prob.optimize()
         return (np.array([self.object_vars[v].x for v in self.object_vars]), self.prob.objVal)
 
@@ -74,6 +74,31 @@ class MarketLinear:
     # given price vector, get allocation
     def allocation(self, prices):
         return np.array([a.demand(prices)[0] for a in self.agent_models])
+
+    # aftermarket allocations with increased budgets and restricted allocations
+    def aftermarket(self, prices, availabilities):
+        allocation = self.allocation(prices)
+        demand = np.sum(allocation, axis=0)
+        noChanges = False
+        while not noChanges:
+            noChanges = True
+            curPrices = np.array(prices)
+            for i in range(len(prices)):
+                if demand[i] >= availabilities[0][i]:
+                    curPrices[i] = 1000.
+            for i, a in enumerate(self.agent_models):
+                indPrices = np.array(curPrices)
+                curAlloc = allocation[i]
+                for j, d in enumerate(curAlloc):
+                    if d == 1.:
+                        indPrices[j] = prices[j]
+                newAlloc = a.demand(indPrices, budgetmult = 1.1)[0]
+                if not np.array_equal(newAlloc, curAlloc):
+                    noChanges = False
+                    allocation[i] = newAlloc
+                    break
+        return np.sum(allocation, axis=0), allocation
+
 
     # return list of agent models
     def agents(self):

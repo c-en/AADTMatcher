@@ -99,7 +99,7 @@ def main():
     _, dancers, capacities, utilities = zip(*info)
     # run A-CEEI to find optimal allocations of dancers to dances
     Market = marketLinear.MarketLinear(dancers, choreographers, capacities, utilities, [complements]*len(dancers))
-    allocation, times, besterrors = aceei.tabu(dancers, choreographers, (choreo_min, choreo_max), Market)
+    allocation, allocation2, times, besterrors = aceei.tabu(dancers, choreographers, (choreo_min, choreo_max), Market)
     # save final allocation matrix to file
     np.savetxt('allocations.csv', allocation, delimiter=',')
     # organize by dance and output to files
@@ -120,6 +120,26 @@ def main():
             for d in rosters[c]:
                 f.write(d + ',' + dancerEmails[d]+ '\n')
     with open("assignments.csv", 'w+') as f:
+        for d in dancers:
+            f.write(d + ',' + ','.join(assignments[d]) + "\n")
+
+    try:
+        os.mkdir('rosters2')
+    except:
+        pass
+    rosters = {c:[] for c in choreographers}
+    assignments = {d:[] for d in dancers}
+    for d in range(len(allocation)):
+        for c in range(len(allocation[d])):
+            if allocation[d][c]==1:
+                rosters[choreographers[c]].append(dancers[d])
+                assignments[dancers[d]].append(choreographers[c])
+    for c in rosters:
+        with open('rosters2/'+c+'.csv', 'w+') as f:
+            f.write(c+'\n')
+            for d in rosters[c]:
+                f.write(d + ',' + dancerEmails[d]+ '\n')
+    with open("assignments2.csv", 'w+') as f:
         for d in dancers:
             f.write(d + ',' + ','.join(assignments[d]) + "\n")
 
